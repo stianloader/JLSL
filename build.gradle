@@ -2,6 +2,8 @@ plugins {
     id 'java'
 }
 
+sourceCompatibility = 17
+
 group 'com.jglrxavpok'
 version '1.0'
 
