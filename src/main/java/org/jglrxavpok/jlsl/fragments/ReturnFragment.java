@@ -1,6 +1,5 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class ReturnFragment extends CodeFragment
-{
+public class ReturnFragment extends CodeFragment {
 
 }

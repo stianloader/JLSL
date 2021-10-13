@@ -5,108 +5,66 @@ import org.jglrxavpok.jlsl.glsl.GLSL.Extensions;
 import org.jglrxavpok.jlsl.glsl.GLSL.Uniform;
 
 @Extensions(
-{
-		"GL_ARB_explicit_uniform_location", "GL_ARB_arrays_of_arrays"
-})
-public class TestShader extends FragmentShader
-{
+        {
+                "GL_ARB_explicit_uniform_location", "GL_ARB_arrays_of_arrays"
+        })
+public class TestShader extends FragmentShaderEnvironment {
 
-	private Vertex		  vertex  = new Vertex();
+    public final double PI = 3.141592653589793;
+    private final Vertex vertex = new Vertex();
+    private final Vertex vertex1 = new Vertex();
+    private final sampler2D texture = new sampler2D(9);
+    @Uniform
+    private final vec2[] list = new vec2[70];
 
-	private Vertex		  vertex1 = new Vertex();
+    @Uniform
+    private final Object[][][] list2 = new Object[70][4][5];
+    @Uniform
+    private vec2 screenSize;
 
-	private final Sampler2D texture = new Sampler2D(9);
+    @Override
+    @NonObfuscable
+    public void main() {
+        vec4 v = new vec4(gl_FragCoord.x / screenSize.x, gl_FragCoord.y / screenSize.y, vertex.test(1), vertex1.test(1));
+        v = normalizer(v, v.length());
+        final boolean b1 = true;
+        final boolean c1 = false;
+        if (!b1) {
+            v.z = 1.0;
+        }
+        final mat2 testMatrix = new mat2(new vec2(((int) v.x << 2), v.y), new vec2(PI, 1));
+        vec2 test = (vec2) list2[0][1][2];
+        test = test.normalize();
+        gl_FragColor = null;
+        // new Vertex(); //TODO: NEW
 
-	@Uniform
-	private Vec2			screenSize;
+        final String testTxt = "Hello";
+        final boolean a = false;
+        final boolean c = true;
+        final boolean b = false;
+        vignette();
+        main();
+    }
 
-	@Uniform
-	private Vec2[]		  list	= new Vec2[70];
+    private void vignette() {
+        gl_FragColor = new vec4(gl_FragCoord.x / screenSize.x, gl_FragCoord.y / screenSize.y, 0, 1);
+        gl_FragColor.z = 1;
 
-	@Uniform
-	private Object[][][]	list2   = new Object[70][4][5];
+        final double distance = gl_FragCoord.sub(new vec4(screenSize.div(2), gl_FragCoord.z, gl_FragCoord.w)).length();
+        gl_FragColor = texture(texture, new vec2(0.5, 0.5));
+        gl_FragColor = new vec4(1, 1, 1, 1).mul(distance);
 
-	public final double	 PI	  = 3.141592653589793;
+        final boolean b = false;
+        gl_FragColor.y = 1;
+        gl_FragColor.x = 2;
+    }
 
-	@Override
-	@NonObfuscable
-	public void main()
-	{
-		Vec4 v = new Vec4(gl_FragCoord.x / screenSize.x, gl_FragCoord.y / screenSize.y, vertex.test(1), vertex1.test(1));
-		v = normalizer(v, v.length());
-		boolean b1 = true;
-		boolean c1 = false;
-		if(b1 == c1)
-		{
-			v.z = 1.0;
-		}
-		Mat2 testMatrix = new Mat2(new Vec2(((int)v.x << 2), v.y), new Vec2(PI, 1));
-		Vec2 test = (Vec2)list2[0][1][2];
-		test = test.normalize();
-		gl_FragColor = null;
-		// new Vertex(); //TODO: NEW
-
-		String testTxt = "Hello";
-		char charTest = 'a';
-		boolean a = false;
-		boolean c = true;
-		boolean b = c && a;
-		if(!(b | a & c))
-		{
-			;
-		}
-		vignette();
-		charTest += 10;
-		normalizer(v, charTest);
-		normalizer(v, charTest);
-		main();
-	}
-
-	private void vignette()
-	{
-		gl_FragColor = new Vec4(gl_FragCoord.x / screenSize.x, gl_FragCoord.y / screenSize.y, 0, 1);
-		gl_FragColor.z = 1;
-
-		double distance = gl_FragCoord.sub(new Vec4(screenSize.div(2), gl_FragCoord.z, gl_FragCoord.w)).length();
-		gl_FragColor = texture(texture, new Vec2(0.5, 0.5));
-		gl_FragColor = new Vec4(1, 1, 1, 1).mul(distance);
-
-		boolean b = false;
-		if(b)
-		{
-			gl_FragColor.w = 1;
-			gl_FragColor.x = 1;
-			if(b)
-			{
-				gl_FragColor.x = 0;
-				gl_FragColor.z = 0;
-			}
-			else
-			{
-				if(b)
-				{
-					gl_FragColor.z = 2;
-					if(b) gl_FragColor.z = 9;
-					gl_FragColor.z = 10;
-				}
-
-				gl_FragColor.z = 3;
-			}
-		}
-		else
-		{
-			gl_FragColor.y = 1;
-		}
-		gl_FragColor.x = 2;
-	}
-
-	private Vec4 normalizer(Vec4 v, double l)
-	{
-		double x1 = v.x / l;
-		double y1 = v.y / l;
-		double z1 = v.z / l;
-		double w1 = v.w / l;
-		return new Vec4(x1, y1, z1, w1);
-	}
+    private vec4 normalizer(final vec4 v, final double l) {
+        final double x1 = v.x / l;
+        final double y1 = v.y / l;
+        final double z1 = v.z / l;
+        final double w1 = v.w / l;
+        return new vec4(x1, y1, z1, w1);
+    }
 
 }

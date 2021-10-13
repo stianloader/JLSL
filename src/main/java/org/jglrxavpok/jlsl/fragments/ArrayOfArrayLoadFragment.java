@@ -1,6 +1,5 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class ArrayOfArrayLoadFragment extends CodeFragment
-{
+public class ArrayOfArrayLoadFragment extends CodeFragment {
 
 }

@@ -1,6 +1,5 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class NewPrimitiveArrayFragment extends CodeFragment
-{
-	public String type;
+public class NewPrimitiveArrayFragment extends CodeFragment {
+    public String type;
 }

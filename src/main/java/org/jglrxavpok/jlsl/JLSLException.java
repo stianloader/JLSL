@@ -1,20 +1,20 @@
 package org.jglrxavpok.jlsl;
 
-public class JLSLException extends RuntimeException
-{
+import java.io.Serial;
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8533858789474579803L;
+public class JLSLException extends RuntimeException {
 
-	public JLSLException(String message)
-	{
-		super(message);
-	}
+    /**
+     *
+     */
+    @Serial
+    private static final long serialVersionUID = -8533858789474579803L;
 
-	public JLSLException(Exception e)
-	{
-		super(e);
-	}
+    public JLSLException(final String message) {
+        super(message);
+    }
+
+    public JLSLException(final Exception e) {
+        super(e);
+    }
 }

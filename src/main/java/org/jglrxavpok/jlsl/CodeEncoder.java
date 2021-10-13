@@ -1,18 +1,17 @@
 package org.jglrxavpok.jlsl;
 
+import org.jglrxavpok.jlsl.fragments.CodeFragment;
+
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.jglrxavpok.jlsl.fragments.*;
+public abstract class CodeEncoder {
+    public JLSLContext context;
 
-public abstract class CodeEncoder
-{
-	public JLSLContext context = null;
+    public abstract void createSourceCode(List<CodeFragment> in, PrintWriter out);
 
-	public abstract void createSourceCode(List<CodeFragment> in, PrintWriter out);
+    public void onRequestResult(final ArrayList<CodeFragment> fragments) {
 
-	public void onRequestResult(ArrayList<CodeFragment> fragments)
-	{
-
-	}
+    }
 }

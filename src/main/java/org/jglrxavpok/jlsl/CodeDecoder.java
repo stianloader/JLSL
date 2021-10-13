@@ -1,13 +1,12 @@
 package org.jglrxavpok.jlsl;
 
+import org.jglrxavpok.jlsl.fragments.CodeFragment;
+
 import java.util.List;
 
-import org.jglrxavpok.jlsl.fragments.*;
+public abstract class CodeDecoder {
 
-public abstract class CodeDecoder
-{
+    public JLSLContext context;
 
-	public JLSLContext context = null;
-
-	public abstract void handleClass(Object data, List<CodeFragment> out);
+    public abstract void handleClass(Object data, List<CodeFragment> out);
 }

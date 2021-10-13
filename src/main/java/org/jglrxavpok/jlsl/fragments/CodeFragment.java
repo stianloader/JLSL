@@ -1,20 +1,17 @@
 package org.jglrxavpok.jlsl.fragments;
 
-import java.util.*;
+import java.util.ArrayList;
 
-public abstract class CodeFragment
-{
+public abstract class CodeFragment {
 
-	public boolean				  forbiddenToPrint = false;
-	private ArrayList<CodeFragment> children		 = new ArrayList<CodeFragment>();
+    private final ArrayList<CodeFragment> children = new ArrayList<>();
+    public boolean forbiddenToPrint;
 
-	public void addChild(CodeFragment fragment)
-	{
-		children.add(fragment);
-	}
+    public void addChild(final CodeFragment fragment) {
+        children.add(fragment);
+    }
 
-	public ArrayList<CodeFragment> getChildren()
-	{
-		return children;
-	}
+    public ArrayList<CodeFragment> getChildren() {
+        return children;
+    }
 }

@@ -1,63 +1,55 @@
 package org.jglrxavpok.jlsl.glsl;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-public class GLSL
-{
+public class GLSL {
 
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Extensions
-	{
-		String[] value();
-	}
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Extensions {
+        String[] value();
+    }
 
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Layout
-	{
-		int location();
-	}
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Layout {
+        int location();
+    }
 
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Attribute
-	{
-	}
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Attribute {
+    }
 
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Uniform
-	{
-	}
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Uniform {
+    }
 
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Varying
-	{
-	}
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Varying {
+    }
 
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface In
-	{
-	}
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface In {
+    }
 
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Out
-	{
-	}
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Out {
+    }
 
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface SwizzlingMethod // TODO
-	{
-	}
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface SwizzlingMethod // TODO
+    {
+    }
 
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Substitute
-	{
-		String value();
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Substitute {
+        String value();
 
-		boolean usesParenthesis() default true;
+        boolean usesParenthesis() default true;
 
-		boolean ownerBefore() default false;
+        boolean ownerBefore() default false;
 
-		int ownerPosition() default 0;
+        int ownerPosition() default 0;
 
-		boolean actsAsField() default false;
-	}
+        boolean actsAsField() default false;
+    }
 }

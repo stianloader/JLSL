@@ -1,72 +1,66 @@
 package org.jglrxavpok.jlsl;
 
-import java.io.*;
-import java.util.*;
+import org.jglrxavpok.jlsl.fragments.CodeFragment;
 
-import org.jglrxavpok.jlsl.fragments.*;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
 
-public class JLSLContext
-{
+public class JLSLContext {
 
-	public static JLSLContext	 currentInstance;
-	private CodeDecoder		   decoder;
-	private CodeEncoder		   encoder;
-	private ArrayList<CodeFilter> filters;
-	private Object				object;
+    public static JLSLContext currentInstance;
+    private final CodeDecoder decoder;
+    private final CodeEncoder encoder;
+    private final ArrayList<CodeFilter> filters;
+    private Object object;
 
-	public JLSLContext(CodeDecoder decoder, CodeEncoder encoder)
-	{
-		JLSLContext.currentInstance = this;
-		this.filters = new ArrayList<CodeFilter>();
-		this.decoder = decoder;
-		this.decoder.context = this;
-		this.encoder = encoder;
-		this.encoder.context = this;
-	}
+    public JLSLContext(final CodeDecoder decoder, final CodeEncoder encoder) {
+        JLSLContext.currentInstance = this;
+        this.filters = new ArrayList<>();
+        this.decoder = decoder;
+        this.decoder.context = this;
+        this.encoder = encoder;
+        this.encoder.context = this;
+    }
 
-	public void addFilters(CodeFilter... filters)
-	{
-		for(CodeFilter filter : filters)
-			this.filters.add(filter);
-	}
+    public void addFilters(final CodeFilter... filters) {
+        this.filters.addAll(Arrays.asList(filters));
+    }
 
-	public void requestAnalysisForEncoder(Object data)
-	{
-		this.object = data;
-		ArrayList<CodeFragment> fragments = new ArrayList<CodeFragment>();
-		decoder.handleClass(data, fragments);
-		ArrayList<CodeFragment> finalFragments = new ArrayList<CodeFragment>();
-		for(CodeFragment frag : fragments)
-		{
-			if(frag != null) finalFragments.add(filter(frag));
-		}
-		encoder.onRequestResult(finalFragments);
-	}
+    public void requestAnalysisForEncoder(final Object data) {
+        this.object = data;
+        final ArrayList<CodeFragment> fragments = new ArrayList<>();
+        decoder.handleClass(data, fragments);
+        final ArrayList<CodeFragment> finalFragments = new ArrayList<>();
+        for (final CodeFragment frag : fragments) {
+			if (frag != null) {
+				finalFragments.add(filter(frag));
+			}
+        }
+        encoder.onRequestResult(finalFragments);
+    }
 
-	private CodeFragment filter(CodeFragment fragment)
-	{
-		for(CodeFilter filter : filters)
-		{
-			fragment = filter.filter(fragment);
-		}
-		return fragment;
-	}
+    private CodeFragment filter(CodeFragment fragment) {
+        for (final CodeFilter filter : filters) {
+            fragment = filter.filter(fragment);
+        }
+        return fragment;
+    }
 
-	public void execute(Object data, PrintWriter out)
-	{
-		this.object = data;
-		ArrayList<CodeFragment> fragments = new ArrayList<CodeFragment>();
-		decoder.handleClass(data, fragments);
-		ArrayList<CodeFragment> finalFragments = new ArrayList<CodeFragment>();
-		for(CodeFragment frag : fragments)
-		{
-			if(frag != null) finalFragments.add(filter(frag));
-		}
-		encoder.createSourceCode(finalFragments, out);
-	}
+    public void execute(final Object data, final PrintWriter out) {
+        this.object = data;
+        final ArrayList<CodeFragment> fragments = new ArrayList<>();
+        decoder.handleClass(data, fragments);
+        final ArrayList<CodeFragment> finalFragments = new ArrayList<>();
+        for (final CodeFragment frag : fragments) {
+			if (frag != null) {
+				finalFragments.add(filter(frag));
+			}
+        }
+        encoder.createSourceCode(finalFragments, out);
+    }
 
-	public Object getCurrentObject()
-	{
-		return object;
-	}
+    public Object getCurrentObject() {
+        return object;
+    }
 }

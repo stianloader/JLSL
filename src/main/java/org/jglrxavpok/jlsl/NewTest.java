@@ -1,21 +1,36 @@
 package org.jglrxavpok.jlsl;
 
-import java.io.*;
-
 import org.jglrxavpok.jlsl.glsl.*;
-import org.jglrxavpok.jlsl.java.*;
+import static org.jglrxavpok.jlsl.glsl.GLSL.*;
 
-public class NewTest
-{
+public class NewTest {
 
-	public static void main(String[] args)
-	{
-		BytecodeDecoder decoder = new BytecodeDecoder();// .addInstructionsFromInterfaces(true);
-		// GLSLEncoder encoder = new GLSLEncoder(120);
-		JavaEncoder encoder = new JavaEncoder(120);
-		JLSLContext context = new JLSLContext(decoder, encoder);
-		// context.addFilters(new ObfuscationFilter());
-		context.execute(TestShader.class, new PrintWriter(System.out));
-	}
+    private static final JLGL jlgl = new JLGL(150);
+
+    public static void main(final String[] args) {
+        System.out.println(jlgl.generateGLSLShader(ExampleShader.class, new ObfuscationFilter()));
+    }
+
+    private static class ExampleShader extends FragmentShaderEnvironment {
+
+        @Uniform sampler2D Sampler0;
+        @Uniform vec4 ColorModulator;
+
+        @In vec4 vertexColor;
+        @In vec2 texCoord0;
+        @In vec2 texCoord2;
+        @In vec4 normal;
+
+        @Out vec4 fragColor;
+
+        @Override
+        public void main() {
+            vec4 color = texture(Sampler0, texCoord0).mul(vertexColor);
+            if (color.a < 0.1) {
+                return;
+            }
+            fragColor = color.mul(ColorModulator);
+        }
+    }
 
 }

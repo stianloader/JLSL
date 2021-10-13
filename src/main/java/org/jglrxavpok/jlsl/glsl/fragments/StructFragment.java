@@ -1,11 +1,10 @@
 package org.jglrxavpok.jlsl.glsl.fragments;
 
-import java.util.*;
+import org.jglrxavpok.jlsl.fragments.CodeFragment;
 
-import org.jglrxavpok.jlsl.fragments.*;
+import java.util.HashMap;
 
-public class StructFragment extends CodeFragment
-{
-	public String				  name;
-	public HashMap<String, String> fields;
+public class StructFragment extends CodeFragment {
+    public String name;
+    public HashMap<String, String> fields;
 }
