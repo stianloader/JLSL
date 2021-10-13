@@ -34,4 +34,17 @@ public class JLGL {
         context.execute(shaderClass, new PrintWriter(stringWriter));
         return stringWriter.toString();
     }
+
+    /**
+     * Generates obfuscated code from this class
+     * @param clazz the class
+     * @return the result code
+     */
+    public String obfuscateClass(final Class<?> clazz) {
+        final JLSLContext context = new JLSLContext(bytecodeDecoder, javaEncoder);
+        context.addFilters(new ObfuscationFilter());
+        final StringWriter stringWriter = new StringWriter();
+        context.execute(clazz, new PrintWriter(stringWriter));
+        return stringWriter.toString();
+    }
 }
