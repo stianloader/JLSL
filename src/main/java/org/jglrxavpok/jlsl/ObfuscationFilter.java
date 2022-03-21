@@ -10,85 +10,74 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class ObfuscationFilter implements CodeFilter {
-
+public class ObfuscationFilter
+        implements CodeFilter {
     private final ArrayList<MethodEntry> entries = new ArrayList<>();
+
     private int nbr;
 
-    @Override
-    public CodeFragment filter(final CodeFragment fragment) {
+    public CodeFragment.Data filter(CodeFragment.Data fragment) {
         if (fragment instanceof MethodCallFragment methodCallFrag) {
-            for (final CodeFragment child : methodCallFrag.getChildren()) {
-                if (child instanceof AnnotationFragment annot) {
-					if (annot.name.equals(NonObfuscable.class.getCanonicalName())) {
-						return fragment;
-					}
+            for (AnnotationFragment annotation : methodCallFrag.annotations()) {
+                if (annotation.name().equals(NonObfuscable.class.getCanonicalName())) {
+                    return fragment;
                 }
             }
-            if (!methodCallFrag.methodOwner.equals(((Class<?>) JLSLContext.currentInstance.getCurrentObject()).getCanonicalName())) {
+
+            if (!methodCallFrag.methodOwner().equals(((Class<?>) JLSLContext.currentInstance.getCurrentObject()).getCanonicalName())) {
                 return fragment;
             }
-            final MethodEntry entry = getMethodEntry(methodCallFrag.methodName, methodCallFrag.methodOwner, methodCallFrag.argumentsTypes);
-            methodCallFrag.methodName = entry.newName;
-        } else if (fragment instanceof StartOfMethodFragment startMethodCallFrag) {
-            for (final CodeFragment child : startMethodCallFrag.getChildren()) {
-                if (child instanceof AnnotationFragment annot) {
-					if (annot.name.equals(NonObfuscable.class.getCanonicalName())) {
-						return fragment;
-					}
+
+            MethodEntry entry = getMethodEntry(methodCallFrag.methodName(), methodCallFrag.methodOwner(), methodCallFrag.argumentsTypes());
+            return methodCallFrag.modify(modifier -> modifier.methodOwner(entry.newName));
+        } else {
+            if (fragment instanceof StartOfMethodFragment startMethodCallFrag) {
+                for (AnnotationFragment annotation : startMethodCallFrag.annotations()) {
+                    if (annotation.name().equals(NonObfuscable.class.getCanonicalName())) {
+                        return fragment;
+                    }
                 }
+                if (!startMethodCallFrag.owner().equals(((Class<?>) JLSLContext.currentInstance.getCurrentObject()).getCanonicalName())) {
+                    return fragment;
+                }
+                MethodEntry entry = getMethodEntry(startMethodCallFrag.name(), startMethodCallFrag.owner(),
+                        startMethodCallFrag.argumentsTypes().toArray(String[]::new));
+                return startMethodCallFrag.modify(modifier -> modifier.owner(entry.newName));
             }
-            if (!startMethodCallFrag.owner.equals(((Class<?>) JLSLContext.currentInstance.getCurrentObject()).getCanonicalName())) {
-                return fragment;
-            }
-            final MethodEntry entry = getMethodEntry(startMethodCallFrag.name, startMethodCallFrag.owner, startMethodCallFrag.argumentsTypes.toArray(new String[0]));
-            startMethodCallFrag.name = entry.newName;
         }
         return fragment;
     }
 
-    private MethodEntry getMethodEntry(final String name, final String owner, final String[] argumentsTypes) {
-        for (final MethodEntry entry : entries) {
-			if (entry.name.equals(name) && entry.owner.equals(owner) && Arrays.deepEquals(argumentsTypes, entry.argumentTypes)) {
-				return entry;
-			}
+    private MethodEntry getMethodEntry(String name, String owner, String[] argumentsTypes) {
+        for (MethodEntry methodEntry : this.entries) {
+            if (methodEntry.name.equals(name) && methodEntry.owner.equals(owner) && Arrays.deepEquals(argumentsTypes, methodEntry.argumentTypes)) {
+                return methodEntry;
+            }
         }
 
-        final MethodEntry entry = new MethodEntry(name, owner, argumentsTypes, getNewName());
-        entries.add(entry);
+        MethodEntry entry = new MethodEntry(name, owner, argumentsTypes, getNewName());
+        this.entries.add(entry);
         return entry;
     }
 
     private String getNewName() {
-        final char last = (char) ('a' + (nbr % 26));
-        int nbr1 = nbr - 26;
-        final StringBuilder s = new StringBuilder();
+        char last = (char) (97 + this.nbr % 26);
+        int nbr1 = this.nbr - 26;
+        StringBuilder s = new StringBuilder();
         while (nbr1 >= 0) {
             nbr1 -= 26;
-            s.insert(0, (char) ('a' + (nbr1 % 26)));
+            s.insert(0, (char) (97 + nbr1 % 26));
         }
-        nbr++;
+        this.nbr++;
         System.out.println("created name " + s + last);
-        return s.toString() + last;
+        return s.toString() + s;
     }
+
 
     @Retention(RetentionPolicy.RUNTIME)
     public @interface NonObfuscable {
-
     }
 
-    private static class MethodEntry {
-        public final String name;
-        public final String owner;
-        public final String[] argumentTypes;
-        public final String newName;
-
-        public MethodEntry(final String name, final String owner, final String[] argumentTypes, final String newName) {
-            this.name = name;
-            this.owner = owner;
-            this.argumentTypes = argumentTypes;
-            this.newName = newName;
-        }
+    private record MethodEntry(String name, String owner, String[] argumentTypes, String newName) {
     }
-
 }

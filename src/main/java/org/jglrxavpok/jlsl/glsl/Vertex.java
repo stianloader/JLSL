@@ -1,14 +1,13 @@
 package org.jglrxavpok.jlsl.glsl;
 
 public class Vertex {
+    private final Vec3 pos = new Vec3(1.0D, 1.0D, 1.0D);
 
-    private final vec3 pos = new vec3(1, 1, 1);
+    private final Vec2 texCoords = new Vec2(0.0D, 0.0D);
 
-    private final vec2 texCoords = new vec2(0, 0);
 
-    public double test(final double v) {
-        // return pos.x += 1; TODO: DUP2_X1
-        pos.x += v;
-        return pos.x;
+    public double test(double v) {
+        this.pos.x += v;
+        return this.pos.x;
     }
 }

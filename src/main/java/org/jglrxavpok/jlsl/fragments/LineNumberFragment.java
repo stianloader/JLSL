@@ -1,6 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class LineNumberFragment extends CodeFragment {
-
-    public int line;
+public record LineNumberFragment(int line) implements CodeFragment.Data {
 }

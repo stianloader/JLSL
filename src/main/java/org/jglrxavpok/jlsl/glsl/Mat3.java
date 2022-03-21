@@ -1,11 +1,9 @@
 package org.jglrxavpok.jlsl.glsl;
 
-public class mat3 {
+public class Mat3 {
 
-    private final double[] data;
-
-    public mat3(final vec3 column1, final vec3 column2, final vec3 column3) {
-        data = new double[3 * 3];
+    public Mat3(Vec3 column1, Vec3 column2, Vec3 column3) {
+        double[] data = new double[9];
         data[0] = column1.x;
         data[1] = column1.y;
         data[2] = column1.z;

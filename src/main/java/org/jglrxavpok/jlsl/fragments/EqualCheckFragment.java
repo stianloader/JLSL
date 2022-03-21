@@ -1,5 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class EqualCheckFragment extends CodeFragment {
-
+public record EqualCheckFragment() implements CodeFragment.Data {
 }

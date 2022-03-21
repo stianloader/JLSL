@@ -1,16 +1,16 @@
 package org.jglrxavpok.jlsl.glsl;
 
-public abstract class FragmentShaderEnvironment extends ShaderEnvironment {
-    public vec4 gl_FragColor;
+public abstract class FragmentShaderEnvironment
+        extends ShaderEnvironment {
+    public Vec4 gl_FragColor;
+    public Vec4 gl_FragCoord;
 
-    public vec4 gl_FragCoord;
-
-    public vec4 texture(final sampler2D texture, final vec2 coords) {
-        return new vec4(0, 0, 0, 0);
+    public Vec4 texture(Sampler2D texture, Vec2 coords) {
+        return new Vec4(0.0D, 0.0D, 0.0D, 0.0D);
     }
 
     @Deprecated
-    public vec4 texture2D(final sampler2D texture, final vec2 coords) {
-        return new vec4(0, 0, 0, 0);
+    public Vec4 texture2D(Sampler2D texture, Vec2 coords) {
+        return new Vec4(0.0D, 0.0D, 0.0D, 0.0D);
     }
 }

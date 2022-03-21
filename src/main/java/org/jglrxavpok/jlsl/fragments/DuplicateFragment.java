@@ -1,5 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class DuplicateFragment extends CodeFragment {
-    public int wait;
+public record DuplicateFragment(int waitCount) implements CodeFragment.Data {
 }

@@ -1,5 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class IntPushFragment extends CodeFragment {
-    public int value;
+public record IntPushFragment(int value) implements CodeFragment.Data {
 }

@@ -1,6 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class RightShiftFragment extends CodeFragment {
-    public boolean signed;
-    public String type;
+public record RightShiftFragment(boolean signed, String type) implements CodeFragment.Data {
 }

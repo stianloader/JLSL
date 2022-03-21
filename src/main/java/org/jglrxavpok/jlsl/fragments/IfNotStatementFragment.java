@@ -1,5 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class IfNotStatementFragment extends IfStatementFragment {
-
+public record IfNotStatementFragment(String toJump) implements CodeFragment.Data {
 }

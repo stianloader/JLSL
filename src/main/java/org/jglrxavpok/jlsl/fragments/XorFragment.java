@@ -1,5 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class XorFragment extends CodeFragment {
-    public String type;
+public record XorFragment(String type) implements CodeFragment.Data {
 }

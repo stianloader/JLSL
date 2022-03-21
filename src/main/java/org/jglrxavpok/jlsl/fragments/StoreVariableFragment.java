@@ -1,7 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class StoreVariableFragment extends CodeFragment {
-    public String variableName;
-    public int variableIndex;
-    public String variableType;
+public record StoreVariableFragment(String variableName, int variableIndex, String variableType) implements CodeFragment.Data {
 }

@@ -1,5 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class NewInstanceFragment extends CodeFragment {
-    public String type;
+public record NewInstanceFragment(String type) implements CodeFragment.Data {
 }

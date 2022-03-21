@@ -1,5 +1,7 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class ArrayStoreFragment extends CodeFragment {
+import java.util.ArrayList;
+import java.util.List;
 
+public record ArrayStoreFragment() implements CodeFragment.Data {
 }

@@ -1,10 +1,14 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class NewClassFragment extends CodeFragment {
-    public AccessPolicy access;
-    public String className;
-    public String superclass;
-    public String[] interfaces;
-    public String sourceFile = "Unknown";
-    public int classVersion;
+public record NewClassFragment(
+    AccessPolicy access,
+    String className,
+    String superclass,
+    FieldFragment[] fields,
+    String[] interfaces,
+    AnnotationFragment[] annotations,
+    String sourceFile,
+    int classVersion
+) implements CodeFragment.Data {
+
 }

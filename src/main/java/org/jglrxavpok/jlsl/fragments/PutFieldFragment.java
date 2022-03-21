@@ -1,6 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class PutFieldFragment extends CodeFragment {
-    public String fieldName;
-    public String fieldType;
+public record PutFieldFragment(String fieldName, String fieldType) implements CodeFragment.Data {
 }

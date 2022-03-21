@@ -1,5 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class ReturnValueFragment extends CodeFragment {
-
+public record ReturnValueFragment() implements CodeFragment.Data {
 }

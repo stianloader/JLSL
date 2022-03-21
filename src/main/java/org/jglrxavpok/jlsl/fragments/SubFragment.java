@@ -1,5 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class SubFragment extends CodeFragment {
-
+public record SubFragment() implements CodeFragment.Data {
 }

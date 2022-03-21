@@ -9,9 +9,8 @@ import java.util.List;
 public abstract class CodeEncoder {
     public JLSLContext context;
 
-    public abstract void createSourceCode(List<CodeFragment> in, PrintWriter out);
+    public abstract void createSourceCode(List<CodeFragment.Data> paramList, PrintWriter paramPrintWriter);
 
-    public void onRequestResult(final ArrayList<CodeFragment> fragments) {
-
+    public void onRequestResult(List<CodeFragment.Data> fragments) {
     }
 }

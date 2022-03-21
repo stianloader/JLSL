@@ -1,13 +1,12 @@
 package org.jglrxavpok.jlsl.glsl;
 
+
 import org.jglrxavpok.jlsl.glsl.GLSL.Substitute;
 
-public class mat4 {
+public class Mat4 {
 
-    private final double[] data;
-
-    public mat4(final vec4 column1, final vec4 column2, final vec4 column3, final vec4 column4) {
-        data = new double[4 * 4];
+    public Mat4(Vec4 column1, Vec4 column2, Vec4 column3, Vec4 column4) {
+        double[] data = new double[16];
         data[0] = column1.x;
         data[1] = column1.y;
         data[2] = column1.z;
@@ -30,12 +29,12 @@ public class mat4 {
     }
 
     @Substitute(value = "*", ownerBefore = true, usesParenthesis = false)
-    public vec4 mul(final vec4 m) {
+    public Vec4 mul(Vec4 m) {
         return null;
     }
 
     @Substitute(value = "*", ownerBefore = true, usesParenthesis = false)
-    public mat4 mul(final mat4 m) {
-        return null; // TODO: Implement
+    public Mat4 mul(Mat4 m) {
+        return null;
     }
 }

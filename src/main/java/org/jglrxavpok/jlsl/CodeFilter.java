@@ -4,5 +4,5 @@ import org.jglrxavpok.jlsl.fragments.CodeFragment;
 
 @FunctionalInterface
 public interface CodeFilter {
-    CodeFragment filter(CodeFragment fragment);
+    CodeFragment.Data filter(CodeFragment.Data paramCodeFragment);
 }

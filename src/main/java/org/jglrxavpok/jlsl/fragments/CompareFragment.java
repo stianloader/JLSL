@@ -1,5 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class CompareFragment extends CodeFragment {
-    public boolean inferior;
+public record CompareFragment(boolean inferior) implements CodeFragment.Data {
 }

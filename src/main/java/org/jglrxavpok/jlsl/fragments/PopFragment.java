@@ -1,5 +1,4 @@
 package org.jglrxavpok.jlsl.fragments;
 
-public class PopFragment extends CodeFragment {
-
+public record PopFragment() implements CodeFragment.Data {
 }

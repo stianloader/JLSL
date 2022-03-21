@@ -1,70 +1,66 @@
 package org.jglrxavpok.jlsl.glsl;
 
 import org.jglrxavpok.jlsl.ObfuscationFilter.NonObfuscable;
-import org.jglrxavpok.jlsl.glsl.GLSL.Extensions;
-import org.jglrxavpok.jlsl.glsl.GLSL.Uniform;
+import static org.jglrxavpok.jlsl.glsl.GLSL.*;
 
-@Extensions(
-        {
-                "GL_ARB_explicit_uniform_location", "GL_ARB_arrays_of_arrays"
-        })
-public class TestShader extends FragmentShaderEnvironment {
 
-    public final double PI = 3.141592653589793;
+@Extensions({"GL_ARB_explicit_uniform_location", "GL_ARB_arrays_of_arrays"})
+public class TestShader
+        extends FragmentShaderEnvironment {
+    public final double PI = Math.PI;
     private final Vertex vertex = new Vertex();
     private final Vertex vertex1 = new Vertex();
-    private final sampler2D texture = new sampler2D(9);
+    private final Sampler2D texture = new Sampler2D(9);
     @Uniform
-    private final vec2[] list = new vec2[70];
+    private final Vec2[] list = new Vec2[70];
 
     @Uniform
     private final Object[][][] list2 = new Object[70][4][5];
-    @Uniform
-    private vec2 screenSize;
 
-    @Override
+    @Uniform
+    private Vec2 screenSize;
+
+
     @NonObfuscable
     public void main() {
-        vec4 v = new vec4(gl_FragCoord.x / screenSize.x, gl_FragCoord.y / screenSize.y, vertex.test(1), vertex1.test(1));
+        Vec4 v = new Vec4(this.gl_FragCoord.x / this.screenSize.x, this.gl_FragCoord.y / this.screenSize.y, this.vertex.test(1.0D), this.vertex1.test(1.0D));
         v = normalizer(v, v.length());
-        final boolean b1 = true;
-        final boolean c1 = false;
-        if (!b1) {
-            v.z = 1.0;
-        }
-        final mat2 testMatrix = new mat2(new vec2(((int) v.x << 2), v.y), new vec2(PI, 1));
-        vec2 test = (vec2) list2[0][1][2];
-        test = test.normalize();
-        gl_FragColor = null;
-        // new Vertex(); //TODO: NEW
+        boolean b1 = true;
+        boolean c1 = false;
 
-        final String testTxt = "Hello";
-        final boolean a = false;
-        final boolean c = true;
-        final boolean b = false;
+
+        Mat2 testMatrix = new Mat2(new Vec2(((int) v.x << 2), v.y), new Vec2(Math.PI, 1.0D));
+        Vec2 test = (Vec2) this.list2[0][1][2];
+        test = test.normalize();
+        this.gl_FragColor = null;
+
+
+        String testTxt = "Hello";
+        boolean a = false;
+        boolean c = true;
+        boolean b = false;
         vignette();
         main();
     }
 
     private void vignette() {
-        gl_FragColor = new vec4(gl_FragCoord.x / screenSize.x, gl_FragCoord.y / screenSize.y, 0, 1);
-        gl_FragColor.z = 1;
+        this.gl_FragColor = new Vec4(this.gl_FragCoord.x / this.screenSize.x, this.gl_FragCoord.y / this.screenSize.y, 0.0D, 1.0D);
+        this.gl_FragColor.z = 1.0D;
 
-        final double distance = gl_FragCoord.sub(new vec4(screenSize.div(2), gl_FragCoord.z, gl_FragCoord.w)).length();
-        gl_FragColor = texture(texture, new vec2(0.5, 0.5));
-        gl_FragColor = new vec4(1, 1, 1, 1).mul(distance);
+        double distance = this.gl_FragCoord.sub(new Vec4(this.screenSize.div(2.0D), this.gl_FragCoord.z, this.gl_FragCoord.w)).length();
+        this.gl_FragColor = texture(this.texture, new Vec2(0.5D, 0.5D));
+        this.gl_FragColor = (new Vec4(1.0D, 1.0D, 1.0D, 1.0D)).mul(distance);
 
-        final boolean b = false;
-        gl_FragColor.y = 1;
-        gl_FragColor.x = 2;
+        boolean b = false;
+        this.gl_FragColor.y = 1.0D;
+        this.gl_FragColor.x = 2.0D;
     }
 
-    private vec4 normalizer(final vec4 v, final double l) {
-        final double x1 = v.x / l;
-        final double y1 = v.y / l;
-        final double z1 = v.z / l;
-        final double w1 = v.w / l;
-        return new vec4(x1, y1, z1, w1);
+    private Vec4 normalizer(Vec4 v, double l) {
+        double x1 = v.x / l;
+        double y1 = v.y / l;
+        double z1 = v.z / l;
+        double w1 = v.w / l;
+        return new Vec4(x1, y1, z1, w1);
     }
-
 }
