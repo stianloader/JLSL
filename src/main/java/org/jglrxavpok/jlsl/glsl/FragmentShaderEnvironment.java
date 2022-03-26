@@ -1,16 +1,24 @@
 package org.jglrxavpok.jlsl.glsl;
 
+import org.jetbrains.annotations.NotNull;
+
+import static org.jglrxavpok.jlsl.glsl.GLSL.*;
+
 public abstract class FragmentShaderEnvironment
         extends ShaderEnvironment {
     public Vec4 gl_FragColor;
     public Vec4 gl_FragCoord;
 
-    public Vec4 texture(Sampler2D texture, Vec2 coords) {
-        return new Vec4(0.0D, 0.0D, 0.0D, 0.0D);
+    @Native
+    public @NotNull Vec4 texture(@NotNull Sampler2D texture, @NotNull Vec2 coords) {
+        //noinspection ALL
+        return null;
     }
 
+    @Native
     @Deprecated
-    public Vec4 texture2D(Sampler2D texture, Vec2 coords) {
-        return new Vec4(0.0D, 0.0D, 0.0D, 0.0D);
+    public @NotNull Vec4 texture2D(@NotNull Sampler2D texture, @NotNull Vec2 coords) {
+        //noinspection ALL
+        return null;
     }
 }

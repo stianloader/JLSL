@@ -1,5 +1,8 @@
 package org.jglrxavpok.jlsl.glsl;
 
+import static org.jglrxavpok.jlsl.glsl.GLSL.*;
+
+@NativeClass(name = "mat2")
 public class Mat2 {
 
     public Mat2(Vec2 column1, Vec2 column2) {

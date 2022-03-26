@@ -1,6 +1,6 @@
 package org.jglrxavpok.jlsl.glsl;
 
-
+@GLSL.NativeClass(name = "vec2")
 public class Vec2 {
     public final double x;
     public final double y;

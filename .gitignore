@@ -14,3 +14,4 @@ bin/
 hs_err_pid*
 *.classpath
 *.project
+build/*

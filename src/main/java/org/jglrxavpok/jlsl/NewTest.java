@@ -1,14 +1,34 @@
 package org.jglrxavpok.jlsl;
 
-import org.jglrxavpok.jlsl.glsl.*;
+import org.jglrxavpok.jlsl.conversion.ASMClassnode2GLSL;
+import org.jglrxavpok.jlsl.conversion.glslbytecode.GLSLBytecode;
+import org.jglrxavpok.jlsl.filters.CodeFilter;
+import org.jglrxavpok.jlsl.filters.ObfuscationFilter;
+import org.jglrxavpok.jlsl.glsl.FragmentShaderEnvironment;
+import org.jglrxavpok.jlsl.glsl.Sampler2D;
+import org.jglrxavpok.jlsl.glsl.Vec2;
+import org.jglrxavpok.jlsl.glsl.Vec4;
+import org.jglrxavpok.jlsl.conversion.Java2ASMClassnode;
+import org.objectweb.asm.tree.ClassNode;
+
+import java.io.IOException;
+
 import static org.jglrxavpok.jlsl.glsl.GLSL.*;
 
 public class NewTest {
 
-    private static final JLGL jlgl = new JLGL(150);
-
     public static void main(final String[] args) {
-        System.out.println(jlgl.generateGLSLShader(ExampleShader.class, new ObfuscationFilter()));
+//        System.out.println(jlgl.generateGLSLShader(ExampleShader.class));
+
+        try {
+            ClassNode node = Java2ASMClassnode.INSTANCE.decode(ExampleShader.class);
+            GLSLBytecode.Root out = ASMClassnode2GLSL.INSTANCE.encode(node, new ASMClassnode2GLSL.Settings(330, false, true));
+            ObfuscationFilter filter = new ObfuscationFilter();
+            out = filter.filter(out);
+            System.out.println(out.generateSource("    "));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static class ExampleShader extends FragmentShaderEnvironment {
@@ -27,9 +47,22 @@ public class NewTest {
         public void main() {
             Vec4 color = texture(Sampler0, texCoord0).mul(vertexColor);
             if (color.a < 0.1) {
+                color.b = 0;
+                return;
+            }
+            if (color.d > 0.5) {
+                color.w = 0;
                 return;
             }
             fragColor = color.mul(ColorModulator);
         }
+
+//        public void another(int someInt, ExampleShader someShader) {
+//            Vec4 color = texture(Sampler0, texCoord0).mul(vertexColor);
+//            if (color.a < 0.1) {
+//                return;
+//            }
+//            fragColor = color.mul(ColorModulator);
+//        }
     }
 }

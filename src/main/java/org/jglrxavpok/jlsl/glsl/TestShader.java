@@ -1,7 +1,7 @@
 package org.jglrxavpok.jlsl.glsl;
 
-import org.jglrxavpok.jlsl.ObfuscationFilter.NonObfuscable;
-import static org.jglrxavpok.jlsl.glsl.GLSL.*;
+import static org.jglrxavpok.jlsl.glsl.GLSL.Extensions;
+import static org.jglrxavpok.jlsl.glsl.GLSL.Uniform;
 
 
 @Extensions({"GL_ARB_explicit_uniform_location", "GL_ARB_arrays_of_arrays"})
@@ -20,8 +20,7 @@ public class TestShader
     @Uniform
     private Vec2 screenSize;
 
-
-    @NonObfuscable
+    
     public void main() {
         Vec4 v = new Vec4(this.gl_FragCoord.x / this.screenSize.x, this.gl_FragCoord.y / this.screenSize.y, this.vertex.test(1.0D), this.vertex1.test(1.0D));
         v = normalizer(v, v.length());

@@ -1,5 +1,7 @@
 package org.jglrxavpok.jlsl.glsl;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -12,13 +14,7 @@ public class GLSL {
 
         boolean ownerBefore() default false;
 
-        int ownerPosition() default 0;
-
         boolean actsAsField() default false;
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface SwizzlingMethod {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -30,20 +26,7 @@ public class GLSL {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
-    public @interface Varying {
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
     public @interface Uniform {
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface Attribute {
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface Layout {
-        int location();
     }
 
     @Retention(RetentionPolicy.RUNTIME)
@@ -54,5 +37,14 @@ public class GLSL {
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Extensions {
         String[] value();
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface Native {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface NativeClass {
+        @NotNull String name();
     }
 }
