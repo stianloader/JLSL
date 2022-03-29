@@ -22,9 +22,9 @@ public class NewTest {
 
         try {
             ClassNode node = Java2ASMClassnode.INSTANCE.decode(ExampleShader.class);
-            GLSLBytecode.Root out = ASMClassnode2GLSL.INSTANCE.encode(node, new ASMClassnode2GLSL.Settings(330, false, true));
-            ObfuscationFilter filter = new ObfuscationFilter();
-            out = filter.filter(out);
+            var settings = new ASMClassnode2GLSL.Settings(330, false, true);
+            GLSLBytecode.Root out = ASMClassnode2GLSL.INSTANCE.encode(node, settings);
+//            out = new ObfuscationFilter().filter(out);
             System.out.println(out.generateSource("    "));
         } catch (IOException e) {
             e.printStackTrace();
@@ -55,14 +55,15 @@ public class NewTest {
                 return;
             }
             fragColor = color.mul(ColorModulator);
+            another(3, this);
         }
 
-//        public void another(int someInt, ExampleShader someShader) {
-//            Vec4 color = texture(Sampler0, texCoord0).mul(vertexColor);
-//            if (color.a < 0.1) {
-//                return;
-//            }
-//            fragColor = color.mul(ColorModulator);
-//        }
+        public void another(int someInt, ExampleShader someShader) {
+            Vec4 color = texture(Sampler0, texCoord0).mul(vertexColor);
+            if (color.a < 0.1) {
+                return;
+            }
+            fragColor = color.mul(ColorModulator);
+        }
     }
 }

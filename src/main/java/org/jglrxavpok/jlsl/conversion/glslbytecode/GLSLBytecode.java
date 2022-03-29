@@ -128,7 +128,7 @@ public class GLSLBytecode {
          *     vec3[] aVectorArray
          * </pre>
          */
-        public record Parameter(@NotNull String name, @NotNull Type type) implements Node {
+        public record Parameter(@NotNull Type type, @NotNull String name) implements Node {
             @Override
             public void generateSource(@NotNull IndentedStringWriter writer) {
                 type.generateSource(writer);
@@ -243,12 +243,12 @@ public class GLSLBytecode {
                 }
             }
 
-            record GreaterThanOrEqualTo(@NotNull Value leftValue, @NotNull Value rightValue) implements Condition {
+            record GreaterThanOrEqualTo(@NotNull Value left, @NotNull Value right) implements Condition {
                 @Override
                 public void generateSource(@NotNull IndentedStringWriter writer) {
-                    leftValue.generateSource(writer);
+                    left.generateSource(writer);
                     writer.write(" >= ");
-                    rightValue.generateSource(writer);
+                    right.generateSource(writer);
                 }
             }
 
@@ -261,12 +261,12 @@ public class GLSLBytecode {
                 }
             }
 
-            record LessThanOrEqualTo(@NotNull Value leftValue, @NotNull Value rightValue) implements Condition {
+            record LessThanOrEqualTo(@NotNull Value left, @NotNull Value right) implements Condition {
                 @Override
                 public void generateSource(@NotNull IndentedStringWriter writer) {
-                    leftValue.generateSource(writer);
+                    left.generateSource(writer);
                     writer.write(" <= ");
-                    rightValue.generateSource(writer);
+                    right.generateSource(writer);
                 }
             }
         }
@@ -416,11 +416,10 @@ public class GLSLBytecode {
          * A method call.
          * e.g. "list.add(1)"
          */
-        record MethodCall(@Nullable Value callingField,
-                          @NotNull List<? extends Value> parameters) implements Value, Statement {
+        record MethodCall(@Nullable Value callingField, boolean listened, @NotNull List<? extends Value> parameters) implements Value, Statement {
 
-            public MethodCall(@Nullable Value callingField, @NotNull Value... parameters) {
-                this(callingField, List.of(parameters));
+            public MethodCall(@Nullable Value callingField, boolean listened, @NotNull Value... parameters) {
+                this(callingField, listened, List.of(parameters));
             }
 
             @Override
@@ -436,6 +435,10 @@ public class GLSLBytecode {
                     parameters.get(i).generateSource(writer);
                 }
                 writer.write(")");
+                if (!listened) {
+                    writer.write(";");
+                    writer.newLine();
+                }
             }
         }
     }

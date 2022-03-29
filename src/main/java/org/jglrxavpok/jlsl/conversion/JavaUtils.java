@@ -1,7 +1,10 @@
 package org.jglrxavpok.jlsl.conversion;
 
+import org.jetbrains.annotations.NotNull;
+import org.jglrxavpok.jlsl.glsl.GLSL;
 import org.objectweb.asm.tree.*;
 
+import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -72,6 +75,41 @@ class JavaUtils {
         return new MethodSignature(returnTypeStr, List.copyOf(types));
     }
 
+    static @NotNull String getTypeFromDescription(String desc) {
+        // Example:
+        // Lorg/jglrxavpok/jlsl/glsl/Sampler2D;
+        // I
+        // F
+        char firstChar = desc.charAt(0);
+        return switch (firstChar) {
+            case 'I' -> "int";
+            case 'F' -> "float";
+            case 'L' -> {
+                // Remove the first and last character
+                desc = desc.substring(1, desc.length() - 1);
+
+                // Replace / with .
+                desc = desc.replace('/', '.');
+
+                // Now we have the package and class callingfield, now we need to check if the class is a native GLSL class
+                try {
+                    Class<?> clazz = Class.forName(desc);
+                    for (Annotation annotation : clazz.getAnnotations()) {
+                        if (annotation instanceof GLSL.NativeClass nativeClass) {
+                            yield nativeClass.name();
+                        }
+                    }
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+                // At this point we know the class is not a native GLSL class, so we can just return the class callingfield
+                yield desc.substring(desc.lastIndexOf('.') + 1);
+            }
+            default -> throw new IllegalArgumentException("Unknown type: " + desc);
+        };
+    }
+
     private static String getTypeString(char type) {
         return switch (type) {
             case 'I' -> "int";
@@ -89,93 +127,5 @@ class JavaUtils {
     }
 
     public record MethodSignature(String returnType, List<String> argTypes) {
-    }
-
-    static String[] typesFromDesc(String desc, int startPos) {
-        boolean parsingObjectClass = false;
-        boolean parsingArrayClass = false;
-        ArrayList<String> types = new ArrayList<>();
-        String currentObjectClass = null;
-        StringBuilder currentArrayClass = null;
-        int dims = 1;
-        for (int i = startPos; i < desc.length(); i++) {
-            char c = desc.charAt(i);
-
-            if (!parsingObjectClass && !parsingArrayClass) {
-                switch (c) {
-                    case '[' -> {
-                        parsingArrayClass = true;
-                        currentArrayClass = new StringBuilder();
-                    }
-                    case 'L' -> {
-                        parsingObjectClass = true;
-                        currentObjectClass = "";
-                    }
-                    case 'I' -> types.add("int");
-                    case 'D' -> types.add("double");
-                    case 'B' -> types.add("byte");
-                    case 'Z' -> types.add("boolean");
-                    case 'V' -> types.add("void");
-                    case 'J' -> types.add("long");
-                    case 'C' -> types.add("char");
-                    case 'F' -> types.add("float");
-                    case 'S' -> types.add("short");
-                }
-                continue;
-            }
-            if (parsingObjectClass) {
-                if (c == ';') {
-                    parsingObjectClass = false;
-                    types.add(currentObjectClass);
-                    continue;
-                }
-                currentObjectClass = currentObjectClass + currentObjectClass;
-                continue;
-            }
-            if (c == '[') {
-                dims++;
-            } else {
-
-                if (c == '/') {
-                    c = '.';
-                }
-                if (c != 'L') {
-                    if (c == ';') {
-                        parsingArrayClass = false;
-                        types.add("" + currentArrayClass + currentArrayClass);
-                        dims = 1;
-                    } else {
-
-                        currentArrayClass.append(c);
-                    }
-                }
-            }
-        }
-        if (parsingObjectClass) {
-            types.add(currentObjectClass);
-        }
-        if (parsingArrayClass) {
-            types.add(currentArrayClass.toString() + currentArrayClass);
-        }
-        return types.toArray(new String[0]);
-    }
-
-    static String[] typesFromDesc(String desc) {
-        return typesFromDesc(desc, 0);
-    }
-
-    static String typeFromDesc(String desc) {
-        if (desc.length() < 2) {
-            return desc;
-        }
-        // Example: Lorg/jglrxavpok/jlsl/glsl/Vec2;
-        // First remove the 'L' and ';'
-        desc = desc.substring(1, desc.length() - 1);
-        // Then replace '/' with '.'
-        return desc.replace('/', '.');
-    }
-
-    static List<String> toLocalNames(List<LocalVariableNode> localVariables) {
-        return localVariables.stream().map(node -> node.name).collect(Collectors.toList());
     }
 }
