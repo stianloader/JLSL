@@ -105,6 +105,7 @@ class StatementGenerator {
         registerProcessor(InsnNode.class, this::processInsnNode);
         registerProcessor(JumpInsnNode.class, this::processJumpInsnNode);
         registerProcessor(FrameNode.class, this::processFrameNode);
+        registerProcessor(TypeInsnNode.class, this::processTypeInsn);
     }
 
     private void processLabelNode(LabelNode node) {
@@ -169,49 +170,55 @@ class StatementGenerator {
         }
     }
 
-    private void processMethodInsnNode(MethodInsnNode node) {
-        int opcode = node.getOpcode();
-        switch (opcode) {
-            case Opcodes.INVOKEVIRTUAL -> {
-                JavaUtils.MethodSignature signature = JavaUtils.toSignature(node.desc);
+    private void processMethodInsnNode(MethodInsnNode insn) {
+        if (insn.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+            JavaUtils.MethodSignature signature = JavaUtils.toSignature(insn.desc);
+            List<GLSLBytecode.Value> parameters = new ArrayList<>(signature.argTypes().size());
 
-                List<GLSLBytecode.Value> parameters = new ArrayList<>(signature.argTypes().size());
-
-                for (int i = 0; i < signature.argTypes().size(); i++) {
-                    GLSLBytecode.Node prev = stack.pop();
-                    if (prev instanceof GLSLBytecode.Value variable) {
-                        parameters.add(variable);
-                    } else {
-                        throw new IllegalStateException("MethodInsnNode invalid state");
-                    }
-                }
-
-                // Reverse the parameters
-                Collections.reverse(parameters);
-
-                // Now we have the parameters, we just need to get the previous node, check if it's a value, and then
-                // push the result
-                GLSLBytecode.Node prev = stack.peek();
-                GLSLBytecode.Value previousValue;
-                if (prev instanceof GLSLBytecode.Value value) {
-                    stack.poll();
-                    if (settings.removeThisKeyword() &&
-                            value instanceof GLSLBytecode.Value.Reference.Variable variable &&
-                            variable.reference().equals("this")
-                    ) {
-                        // Check if the value being indexed is a "this" access, and remove it
-                        previousValue = new GLSLBytecode.Value.Reference.Variable(node.name);
-                    } else {
-                        previousValue = value.index(node.name);
-                    }
+            for (int i = 0; i < signature.argTypes().size(); i++) {
+                GLSLBytecode.Node prev = stack.pop();
+                if (prev instanceof GLSLBytecode.Value variable) {
+                    parameters.add(variable);
                 } else {
-                    previousValue = new GLSLBytecode.Value.Reference.Variable(node.name);
+                    throw new IllegalStateException("MethodInsnNode invalid state");
                 }
-
-                // Check if this is method's result is listened to, or not
-                boolean listenedTo = nodeQueue.peek() instanceof VarInsnNode || nodeQueue.peek() instanceof FieldInsnNode;
-                stack.addFirst(new GLSLBytecode.Value.MethodCall(previousValue, listenedTo, parameters));
             }
+
+            // Reverse the parameters
+            Collections.reverse(parameters);
+
+            // Now we have the parameters, we just need to get the previous node, check if it's a value, and then
+            // push the result
+            GLSLBytecode.Node prev = stack.peek();
+            GLSLBytecode.Value previousValue;
+            if (prev instanceof GLSLBytecode.Value value) {
+                stack.poll();
+                if (settings.removeThisKeyword() &&
+                        value instanceof GLSLBytecode.Value.Reference.Variable variable &&
+                        variable.reference().equals("this")
+                ) {
+                    // Check if the value being indexed is a "this" access, and remove it
+                    previousValue = new GLSLBytecode.Value.Reference.Variable(insn.name);
+                } else {
+                    previousValue = value.index(insn.name);
+                }
+            } else {
+                previousValue = new GLSLBytecode.Value.Reference.Variable(insn.name);
+            }
+
+            // Check if this is method's result is listened to, or not
+            boolean listenedTo = nodeQueue.peek() instanceof VarInsnNode || nodeQueue.peek() instanceof FieldInsnNode;
+            this.stack.addFirst(new GLSLBytecode.Value.MethodCall(previousValue, listenedTo, parameters));
+        } else {
+            throw new UnsupportedOperationException("Unsupported opcode: " + insn.getOpcode());
+        }
+    }
+
+    private void processTypeInsn(TypeInsnNode insn) {
+        if (insn.getOpcode() == Opcodes.NEW) {
+            // Bulk logic should be handled by the INVOKESPECIAL method
+        } else {
+            throw new IllegalStateException("TypeInsnNodes for opcodes other than NEW are unsupported at the moment. Opcode is: " + insn.getOpcode());
         }
     }
 

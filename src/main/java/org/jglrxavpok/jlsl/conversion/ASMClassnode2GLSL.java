@@ -36,6 +36,14 @@ public enum ASMClassnode2GLSL implements GLSLEncoder<ClassNode> {
                 type = Field.Type.UNIFORM;
             }
 
+            if (hasAnnotation(field, GLSL.Attribute.class)) {
+                type = Field.Type.ATTRIBUTE;
+            }
+
+            if (hasAnnotation(field, GLSL.Varying.class)) {
+                type = Field.Type.VARYING;
+            }
+
             // Then inputs
             if (hasAnnotation(field, GLSL.In.class)) {
                 type = Field.Type.IN;

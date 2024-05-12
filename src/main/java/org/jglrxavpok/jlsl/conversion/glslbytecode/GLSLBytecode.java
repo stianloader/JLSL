@@ -72,9 +72,11 @@ public class GLSLBytecode {
          * The type of the field.
          */
         public enum Type implements Node {
-            UNIFORM("uniform"),
+            ATTRIBUTE("attribute"),
             IN("in"),
-            OUT("out");
+            OUT("out"),
+            UNIFORM("uniform"),
+            VARYING("varying");
 
             private final String display;
 
