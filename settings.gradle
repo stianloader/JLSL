@@ -1,2 +1,17 @@
-rootProject.name = 'jlsl'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        mavenLocal()
+        maven {
+            name = 'stianloader-maven'
+            url = 'https://stianloader.org/maven/'
+        }
+        maven {
+            name = "wagyourtail"
+            url = "https://maven.wagyourtail.xyz/releases"
+        }
+    }
+}
 
+rootProject.name = 'jlsl'
