@@ -1,45 +1,55 @@
 package org.jglrxavpok.jlsl.glsl;
 
-import java.lang.annotation.*;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-public class GLSL
-{
+public class GLSL {
+
+	/**
+	 * Defines the input attributes of a vertex.
+	 *
+	 * @deprecated In GLSL 1.3 (OpenGL 3.0), this type qualifier was deprecated
+	 * and removed in GLSL 1.4 (OpenGL 3.1). In vertex shaders, {@link In}
+	 * is to be used instead. {@link Attribute} cannot be used in any other shader stage.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Deprecated
+	public @interface Attribute {
+	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Extensions
-	{
+	public @interface Extensions {
 		String[] value();
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Layout
-	{
+	public @interface Flat {
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface In {
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface Layout {
 		int location();
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Attribute
-	{
+	public @interface Out {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Uniform
-	{
-	}
+	public @interface Substitute {
+		boolean actsAsField() default false;
 
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Varying
-	{
-	}
+		boolean ownerBefore() default false;
 
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface In
-	{
-	}
+		int ownerPosition() default 0;
 
-	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Out
-	{
+		boolean usesParenthesis() default true;
+
+		String value();
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -48,16 +58,20 @@ public class GLSL
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
-	public @interface Substitute
-	{
-		String value();
+	public @interface Uniform {
+	}
 
-		boolean usesParenthesis() default true;
-
-		boolean ownerBefore() default false;
-
-		int ownerPosition() default 0;
-
-		boolean actsAsField() default false;
+	/**
+	 * Defines that the input/output data is interpolated between the vertex
+	 * and fragment shader.
+	 *
+	 * @deprecated In GLSL 1.3 (OpenGL 3.0), this type qualifier was deprecated
+	 * and removed in GLSL 1.4 (OpenGL 3.1). In vertex shaders, {@link Out}
+	 * is to be used instead. In fragment shaders, {@link In} is to be used instead.
+	 * {@link Varying} cannot be used in any other shader stage.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Deprecated
+	public @interface Varying {
 	}
 }

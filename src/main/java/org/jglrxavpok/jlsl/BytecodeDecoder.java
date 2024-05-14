@@ -939,7 +939,6 @@ public class BytecodeDecoder extends CodeDecoder {
 		return typesFromDesc(desc, 0);
 	}
 
-	@SuppressWarnings("unchecked")
 	private static void addAnnotFragments(String methodClass, String methodName, String methodDesc, CodeFragment fragment) {
 		try {
 			ClassReader reader = new ClassReader(BytecodeDecoder.class.getResourceAsStream("/" + methodClass.replace(".", "/") + ".class"));

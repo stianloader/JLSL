@@ -71,6 +71,11 @@ public class Vec4 {
 	}
 
 	@Substitute(value = "*", usesParenthesis = false, ownerBefore = true)
+	public Vec4 mul(int d) {
+		return new Vec4(x * d, y * d, z * d, w * d);
+	}
+
+	@Substitute(value = "*", usesParenthesis = false, ownerBefore = true)
 	public Vec4 mul(double d) {
 		return new Vec4(x * d, y * d, z * d, w * d);
 	}

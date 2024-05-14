@@ -3,11 +3,14 @@ package org.jglrxavpok.jlsl.glsl;
 import java.io.*;
 import java.util.*;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jglrxavpok.jlsl.*;
 import org.jglrxavpok.jlsl.fragments.*;
 import org.jglrxavpok.jlsl.fragments.MethodCallFragment.InvokeTypes;
 import org.jglrxavpok.jlsl.glsl.GLSL.Attribute;
 import org.jglrxavpok.jlsl.glsl.GLSL.Extensions;
+import org.jglrxavpok.jlsl.glsl.GLSL.Flat;
 import org.jglrxavpok.jlsl.glsl.GLSL.In;
 import org.jglrxavpok.jlsl.glsl.GLSL.Layout;
 import org.jglrxavpok.jlsl.glsl.GLSL.Out;
@@ -18,7 +21,14 @@ import org.jglrxavpok.jlsl.glsl.fragments.*;
 
 public class GLSLEncoder extends CodeEncoder
 {
-	public static boolean		   DEBUG		 = true;
+	public static boolean DEBUG = true;
+	private static final int STRUCT = 1;
+
+	private static void enforceCompatibleAnnotations(@Nullable String oldAnnotation, @NotNull String newAnnotation) {
+		if (oldAnnotation != null) {
+			throw new IllegalStateException("Mutually exclusive annotations provided: '" + oldAnnotation + "' and '" + newAnnotation + "'");
+		}
+	}
 
 	private int					 indentation;
 	private int					 glslversion;
@@ -37,7 +47,6 @@ public class GLSLEncoder extends CodeEncoder
 	private boolean				 convertNumbersToChars;
 	private ArrayList<String>	   loadedStructs = new ArrayList<String>();
 	private int					 currentRequestType;
-	private static final int		STRUCT		= 1;
 	private Object				  requestData;
 	private boolean				 allowedToPrint;
 	private PrintWriter			 output;
@@ -1087,73 +1096,64 @@ public class GLSLEncoder extends CodeEncoder
 		indentation++ ;
 	}
 
-	private void handleFieldFragment(FieldFragment fragment, List<CodeFragment> in, int index, PrintWriter out)
-	{
-		String storageType = null;
-		for(CodeFragment child : fragment.getChildren())
-		{
-			if(child instanceof AnnotationFragment)
-			{
+	private void handleFieldFragment(FieldFragment fragment, List<CodeFragment> in, int index, PrintWriter out) {
+		String storageQualifier = null;
+		String auxiliaryStorageQualifier = null;
+
+		for(CodeFragment child : fragment.getChildren()) {
+			if(child instanceof AnnotationFragment) {
 				AnnotationFragment annot = (AnnotationFragment)child;
-				if(annot.name.equals(Uniform.class.getCanonicalName()))
-				{
-					storageType = "uniform";
-				}
-				else if(annot.name.equals(Attribute.class.getCanonicalName()))
-				{
-					storageType = "attribute";
-					if(currentClass.superclass.equals(FragmentShader.class.getCanonicalName()))
-					{
+
+				if(annot.name.equals(Uniform.class.getCanonicalName())) {
+					GLSLEncoder.enforceCompatibleAnnotations(storageQualifier, "uniform");
+					storageQualifier = "uniform";
+				} else if(annot.name.equals(Attribute.class.getCanonicalName())) {
+					GLSLEncoder.enforceCompatibleAnnotations(storageQualifier, "attribute");
+					storageQualifier = "attribute";
+					if(currentClass.superclass.equals(FragmentShader.class.getCanonicalName())) {
 						throw new JLSLException("Attributes are not allowed in fragment shaders");
 					}
-				}
-				else if(annot.name.equals(In.class.getCanonicalName()))
-				{
-					storageType = "in";
-				}
-				else if(annot.name.equals(Out.class.getCanonicalName()))
-				{
-					storageType = "out";
-				}
-				else if(annot.name.equals(Varying.class.getCanonicalName()))
-				{
-					storageType = "varying";
-				}
-
-				else if(annot.name.equals(Layout.class.getCanonicalName()))
-				{
+				} else if(annot.name.equals(In.class.getCanonicalName())) {
+					GLSLEncoder.enforceCompatibleAnnotations(storageQualifier, "in");
+					storageQualifier = "in";
+				} else if(annot.name.equals(Out.class.getCanonicalName())) {
+					GLSLEncoder.enforceCompatibleAnnotations(storageQualifier, "out");
+					storageQualifier = "out";
+				} else if(annot.name.equals(Varying.class.getCanonicalName())) {
+					GLSLEncoder.enforceCompatibleAnnotations(storageQualifier, "varying");
+					storageQualifier = "varying";
+				} else if(annot.name.equals(Flat.class.getCanonicalName())) {
+					GLSLEncoder.enforceCompatibleAnnotations(auxiliaryStorageQualifier, "flat");
+					auxiliaryStorageQualifier = "flat";
+				} else if(annot.name.equals(Layout.class.getCanonicalName())) {
 					int location = (Integer)annot.values.get("location");
-
-					if(glslversion > 430 || extensions.contains("GL_ARB_explicit_uniform_location")) out.print("layout(location = " + location + ") ");
+					if(glslversion > 430 || extensions.contains("GL_ARB_explicit_uniform_location")) {
+						out.print("layout(location = " + location + ") ");
+					}
 				}
 			}
 		}
-		if(storageType == null)
-		{
-			storageType = "uniform";
+
+		if(storageQualifier == null) {
+			storageQualifier = "uniform";
 		}
-		if(fragment.access.isFinal())
-		{
-			if(fragment.access.isStatic())
-			{
+
+		String allStorageQualifiers = auxiliaryStorageQualifier == null ? storageQualifier : (auxiliaryStorageQualifier + this.space + storageQualifier);
+
+		if(fragment.access.isFinal()) {
+			if(fragment.access.isStatic()) {
 				println("#define" + space + fragment.name + space + fragment.initialValue);
 				constants.put(fragment.initialValue, fragment.name);
-			}
-			else
-			{
-				storageType = "const";
-				println(storageType + space + toGLSL(fragment.type) + space + fragment.name + space + "=" + space + fragment.initialValue + ";");
+			} else {
+				println("const" + space + toGLSL(fragment.type) + space + fragment.name + space + "=" + space + fragment.initialValue + ";");
 				constants.put(fragment.initialValue, fragment.name);
 			}
-		}
-		else
-		{
-			if(fragment.initialValue != null)
-			{
-				println(storageType + space + toGLSL(fragment.type) + space + fragment.name + space + "=" + space + fragment.initialValue + ";");
+		} else {
+			if(fragment.initialValue != null) {
+				println(allStorageQualifiers + space + toGLSL(fragment.type) + space + fragment.name + space + "=" + space + fragment.initialValue + ";");
+			} else {
+				println(allStorageQualifiers + space + toGLSL(fragment.type) + space + fragment.name + ";");
 			}
-			else
-				println(storageType + space + toGLSL(fragment.type) + space + fragment.name + ";");
 		}
 	}
 

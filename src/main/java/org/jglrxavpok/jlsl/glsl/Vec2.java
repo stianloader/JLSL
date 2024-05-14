@@ -31,9 +31,22 @@ public class Vec2
 	}
 
 	@Substitute(value = "/", usesParenthesis = false, ownerBefore = true)
-	public Vec2 div(double i)
-	{
+	public Vec2 div(double i) {
 		return new Vec2(x / i, y / i);
 	}
 
+	@Substitute(value = "/", usesParenthesis = false, ownerBefore = true)
+	public Vec2 div(int i) {
+		return new Vec2(x / i, y / i);
+	}
+
+	@Substitute(value = "*", usesParenthesis = false, ownerBefore = true)
+	public Vec2 mul(double i) {
+		return new Vec2(x * i, y * i);
+	}
+
+	@Substitute(value = "*", usesParenthesis = false, ownerBefore = true)
+	public Vec2 mul(int i) {
+		return new Vec2(x * i, y * i);
+	}
 }
