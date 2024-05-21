@@ -85,6 +85,7 @@ public class GLSLEncoder extends CodeEncoder
 		setGLSLTranslation(Integer.class.getCanonicalName(), "int");
 
 		setGLSLTranslation(Math.class.getCanonicalName(), "");
+		setGLSLTranslation(GLSLMath.class.getCanonicalName(), "");
 
 		setGLSLTranslation(Sampler2D.class.getCanonicalName(), "sampler2D");
 
@@ -173,22 +174,26 @@ public class GLSLEncoder extends CodeEncoder
 	}
 
 	@Override
-	public void createSourceCode(List<CodeFragment> in, PrintWriter out)
-	{
+	public void createSourceCode(List<CodeFragment> in, PrintWriter out) {
 		interpret(in);
 		this.output = out;
 		this.allowedToPrint = true;
 		println("#version " + glslversion);
-		for(int index = 0; index < in.size(); index++ )
-		{
+		for(int index = 0, len = in.size(); index < len; index++ ) {
 			CodeFragment fragment = in.get(index);
 			this.output = out;
 			this.allowedToPrint = !fragment.forbiddenToPrint;
-			if(!waiting.isEmpty())
-			{
+			while(!waiting.isEmpty()) {
 				handleCodeFragment(waiting.pop(), index, in, out);
 			}
+//			out.println("/* CF: " + index + ": " + fragment.getClass().toString() + "*/");
+//			out.println("/* STACK: " + this.stack + "*/");
+//			out.println("/* TSTACK: " + this.typesStack + "*/");
+//			if (index == 35) {
+//				out.println("/* CFDBG: " + fragment + "*/");
+//			}
 			handleCodeFragment(fragment, index, in, out);
+//			out.println("/* EF */");
 		}
 		out.flush();
 	}
@@ -679,24 +684,25 @@ public class GLSLEncoder extends CodeEncoder
 		stack.push(a + "<<" + (!fragment.signed ? "<" : "") + b);
 	}
 
-	private void handleCastFragment(CastFragment fragment, List<CodeFragment> in, int index, PrintWriter out)
-	{
-		String toCast = stack.pop();
+	private void handleCastFragment(CastFragment fragment, List<CodeFragment> in, int index, PrintWriter out) {
+		String toCast = this.stack.pop();
 		String withoutPreviousCast = toCast;
 
 		String previousType = null;
-		if(withoutPreviousCast.startsWith("("))
-		{
+		if (withoutPreviousCast.startsWith("(")) {
 			previousType = withoutPreviousCast.substring(1, withoutPreviousCast.indexOf(")") - 1);
+		} else {
+			previousType = toGLSL(this.currentMethod.varName2TypeMap.get(withoutPreviousCast));
 		}
-		else
-			previousType = toGLSL(currentMethod.varName2TypeMap.get(withoutPreviousCast));
-		if(previousType.equals(toGLSL(fragment.to)))
-		{
-			if(DEBUG) System.out.println("GLSLEncoder > Cancelling cast for " + toCast);
+	
+		if (previousType.equals(toGLSL(fragment.to))) {
+			if (GLSLEncoder.DEBUG) {
+				System.out.println("GLSLEncoder > Cancelling cast for " + toCast);
+			}
+			this.stack.push(withoutPreviousCast);
+		} else {
+			this.stack.push("(" + toGLSL(fragment.to) + ")" + toCast);
 		}
-		else
-			stack.push("(" + toGLSL(fragment.to) + ")" + toCast);
 	}
 
 	private void handleModFragment(ModFragment fragment, List<CodeFragment> in, int index, PrintWriter out)

@@ -3,10 +3,10 @@ package org.jglrxavpok.jlsl.glsl;
 import org.jglrxavpok.jlsl.glsl.GLSL.*;
 
 public class Vec4 {
+	public double w;
 	public double x;
 	public double y;
 	public double z;
-	public double w;
 
 	public Vec4(double x, double y, double z, double w) {
 		this.x = x;
@@ -43,12 +43,33 @@ public class Vec4 {
 		this.w = w;
 	}
 
+	@Substitute(value = "+", usesParenthesis = false, ownerBefore = true)
+	public Vec4 add(Vec4 v) {
+		return new Vec4(this.x + v.x, this.y + v.y, this.z + v.z, this.w + v.w);
+	}
+
+	@Substitute(value = "/", usesParenthesis = false, ownerBefore = true)
+	public Vec4 div(double d) {
+		return new Vec4(this.x / d, this.y / d, this.z / d, this.w / d);
+	}
+
 	public double length() {
-		double dx = x;
-		double dy = y;
-		double dz = z;
-		double dw = w;
-		return Math.sqrt(dx * dx + dy * dy + dz * dz + dw * dw);
+		return Math.sqrt(GLSLMath.dot(this, this));
+	}
+
+	@Substitute(value = "*", usesParenthesis = false, ownerBefore = true)
+	public Vec4 mul(double d) {
+		return new Vec4(this.x * d, this.y * d, this.z * d, this.w * d);
+	}
+
+	@Substitute(value = "*", usesParenthesis = false, ownerBefore = true)
+	public Vec4 mul(int d) {
+		return new Vec4(this.x * d, this.y * d, this.z * d, this.w * d);
+	}
+
+	@Substitute(value = "*", usesParenthesis = false, ownerBefore = true)
+	public Vec4 mul(Vec4 v) {
+		return new Vec4(this.x * v.x, this.y * v.y, this.z * v.z, this.w * v.w);
 	}
 
 	public Vec4 normalize() {
@@ -60,28 +81,8 @@ public class Vec4 {
 		return new Vec4(x1, y1, z1, w1);
 	}
 
-	@Substitute(value = "+", usesParenthesis = false, ownerBefore = true)
-	public Vec4 add(Vec4 v) {
-		return new Vec4(x + v.x, y + v.y, z + v.z, w + v.w);
-	}
-
 	@Substitute(value = "-", usesParenthesis = false, ownerBefore = true)
 	public Vec4 sub(Vec4 v) {
-		return new Vec4(x - v.x, y - v.y, z - v.z, w - v.w);
-	}
-
-	@Substitute(value = "*", usesParenthesis = false, ownerBefore = true)
-	public Vec4 mul(int d) {
-		return new Vec4(x * d, y * d, z * d, w * d);
-	}
-
-	@Substitute(value = "*", usesParenthesis = false, ownerBefore = true)
-	public Vec4 mul(double d) {
-		return new Vec4(x * d, y * d, z * d, w * d);
-	}
-
-	@Substitute(value = "*", usesParenthesis = false, ownerBefore = true)
-	public Vec4 mul(Vec4 v) {
-		return new Vec4(this.x * v.x, this.y * v.y, this.z * v.z, this.w * v.w);
+		return new Vec4(this.x - v.x, this.y - v.y, this.z - v.z, this.w - v.w);
 	}
 }
