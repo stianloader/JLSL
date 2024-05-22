@@ -712,35 +712,45 @@ public class GLSLEncoder extends CodeEncoder
 		stack.push("mod(" + b + ", " + a + ")");
 	}
 
-	private void handleMethodCallFragment(MethodCallFragment fragment, List<CodeFragment> in, int index, PrintWriter out)
-	{
+	private void handleMethodCallFragment(MethodCallFragment fragment, List<CodeFragment> in, int index, PrintWriter out) {
 		String s = "";
 		String n = fragment.methodName;
+		String translatedOwner = this.toGLSL(fragment.methodOwner);
 		boolean isConstructor = false;
-		if(n.equals("<init>"))
-		{
-			n = toGLSL(fragment.methodOwner);
+
+		if(n.equals("<init>")) {
+			n = translatedOwner;
 			isConstructor = true;
-			if(!newInstances.isEmpty()) newInstances.pop();
+			if(!this.newInstances.isEmpty()) {
+				this.newInstances.pop();
+			}
 		}
-		String key = fragment.methodName;
-		if(toGLSL(fragment.methodOwner) != null && !toGLSL(fragment.methodOwner).equals("null") && !toGLSL(fragment.methodOwner).trim().equals("")) key = toGLSL(fragment.methodOwner) + "." + key;
-		if(methodReplacements.containsKey(key))
-		{
+
+		String key;
+
+		if(translatedOwner != null && !translatedOwner.equals("null") && !translatedOwner.trim().equals("")) {
+			key = translatedOwner + "." + fragment.methodName;
+		} else {
+			key = fragment.methodName;
+		}
+
+		if(this.methodReplacements.containsKey(key)) {
 			String nold = key;
-			n = methodReplacements.get(key);
-			if(DEBUG) System.out.println("GLSLEncoder > Replacing " + nold + " by " + n);
+			n = this.methodReplacements.get(key);
+
+			if (GLSLEncoder.DEBUG) {
+				System.out.println("GLSLEncoder > Replacing " + nold + " by " + n);
+			}
 		}
-		if(fragment.invokeType == InvokeTypes.SPECIAL && currentMethod.name.equals("<init>") && fragment.methodOwner.equals(currentClass.superclass))
-		{
+
+		if(fragment.invokeType == InvokeTypes.SPECIAL && currentMethod.name.equals("<init>") && fragment.methodOwner.equals(currentClass.superclass)) {
 			this.allowedToPrint = false;
 		}
 
 		s += n + "(";
 		ArrayList<String> args = new ArrayList<String>();
 		for(@SuppressWarnings("unused")
-		String type : fragment.argumentsTypes)
-		{
+		String type : fragment.argumentsTypes) {
 			String arg = stack.pop();
 			if(arg.startsWith("(") && arg.endsWith(")") && countChar(arg, '(') == countChar(arg, ')'))
 			{
@@ -775,57 +785,46 @@ public class GLSLEncoder extends CodeEncoder
 				}
 			}
 		}
-		if(fragment.invokeType == InvokeTypes.VIRTUAL)
-		{
+
+		if(fragment.invokeType == InvokeTypes.VIRTUAL) {
 			String owner = stack.pop();
-			if(owner.equals(currentClass.className) || owner.equals("this"))
-			{
+			if(owner.equals(currentClass.className) || owner.equals("this")) {
 				owner = null;
+			} else if(owner.startsWith("(") && owner.endsWith(")") && countChar(owner, '(') == countChar(owner, ')')) {
+				owner = owner.substring(1, owner.length() - 1);
 			}
-			else
-			{
-				if(owner.startsWith("(") && owner.endsWith(")") && countChar(owner, '(') == countChar(owner, ')'))
-				{
-					owner = owner.substring(1, owner.length() - 1);
-				}
-			}
-			if(!ownerBefore)
-			{
-				if(actsAsField)
-				{
-					if(n.length() >= 1)
+
+			if(!ownerBefore){
+				if(actsAsField) {
+					if(n.length() >= 1) {
 						s = (owner != null ? owner : "") + "." + n;
-					else
+					} else {
 						s = (owner != null ? owner : "");
-					if(argsStr.length() > 0)
-					{
+					}
+
+					if(argsStr.length() > 0) {
 						s += " = " + argsStr;
 					}
-				}
-				else
+				} else {
 					s = n + (parenthesis ? "(" : "") + (owner != null ? owner + (argsStr.length() > 0 ? ", " : "") : "") + argsStr + (parenthesis ? ")" : "");
-			}
-			else
+				}
+			} else {
 				s = (owner != null ? owner : "") + n + (parenthesis ? "(" : "") + argsStr + (parenthesis ? ")" : "");
-			if(fragment.returnType.equals("void"))
-			{
-				println(getIndent() + s + ";" + getEndOfLine(currentLine));
 			}
-			else
+
+			if(fragment.returnType.equals("void")) {
+				println(getIndent() + s + ";" + getEndOfLine(currentLine));
+			} else {
 				stack.push("(" + s + ")");
-		}
-		else if(fragment.invokeType == InvokeTypes.STATIC)
-		{
+			}
+		} else if(fragment.invokeType == InvokeTypes.STATIC) {
 			String ownership = "";
 			String owner = toGLSL(fragment.methodOwner);
 			if(owner != null && !owner.trim().equals("") && !owner.equals("null")) ownership = owner + (n.length() > 0 ? "." : "");
 			stack.push(ownership + n + (parenthesis ? "(" : "") + argsStr + (parenthesis ? ")" : ""));
-		}
-		else
-		{
+		} else {
 			stack.push(n + (parenthesis ? "(" : "") + argsStr + (parenthesis ? ")" : ""));
 		}
-
 	}
 
 	private void handleElseStatementFragment(ElseStatementFragment fragment, List<CodeFragment> in, int index, PrintWriter out)

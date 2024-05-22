@@ -24,4 +24,26 @@ public class GLSLMath {
 	public static float dot(Vec4 a, Vec4 b) {
 		return (float) (a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w);
 	}
+
+	public static double smoothstep(double edge0, double edge1, double x) {
+		// Note: This is an approximation of the smoothstep function.
+		// Smoothstep is by no means the same as step, but I couldn't be bothered
+		// of writing a smoothstep function in java.
+		return step(edge0, edge1, x);
+	}
+
+	public static float smoothstep(float edge0, float edge1, float x) {
+		// Note: This is an approximation of the smoothstep function.
+		// Smoothstep is by no means the same as step, but I couldn't be bothered
+		// of writing a smoothstep function in java.
+		return Math.min(edge1, Math.max(edge0, x));
+	}
+
+	public static double step(double edge0, double edge1, double x) {
+		return Math.min(edge1, Math.max(edge0, x));
+	}
+
+	public static float step(float edge0, float edge1, float x) {
+		return Math.min(edge1, Math.max(edge0, x));
+	}
 }
